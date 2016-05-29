@@ -1,0 +1,41 @@
+---
+- name: create web dir
+  file: path={{ web_dir }} state=directory
+
+- name: get venv source
+  unarchive: src=https://pypi.python.org/packages/source/v/virtualenv/virtualenv-15.0.1.tar.gz
+             dest={{ web_dir }} copy=no
+
+- name: create venv dir
+  file: path={{ venv_dir }} state=directory
+
+- name: install venv
+  command: python3 {{ web_dir }}/virtualenv-15.0.1/virtualenv.py {{ venv_dir }}
+           creates={{ venv_dir }}/bin/activate
+  notify:
+    - delete venv source
+
+- name: install app within venv
+  command: >
+    {{ venv_dir }}/bin/pip install {{ app_name }}
+    creates={{ venv_dir }}/lib/python*/site-packages/{{ app_name  }}
+
+- name: install apache2
+  apt: name=apache2 state=present update_cache=yes
+
+- name: copy apache site config
+  template: src=apache-conf.j2 dest={{ apache2_dir }}/sites-available/{{ app_name }}.conf owner=root group=root
+  notify:
+    - enable apache site
+
+- name: copy wsgi config
+  template: src=wsgi-conf.j2 dest={{ web_dir }}/{{ app_name }}.wsgi owner=root group=root
+
+- name: enable app port in apache
+  lineinfile: dest={{ apache2_dir }}/ports.conf state=present line="Listen {{ app_port }}"
+
+- name: install mod-wsgi-py3
+  apt: name=libapache2-mod-wsgi-py3 state=present update_cache=yes
+  notify:
+    - enable apache mod-wsgi
+    - restart apache2

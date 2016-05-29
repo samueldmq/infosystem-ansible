@@ -1,0 +1,7 @@
+---
+app_name: infosystem
+app_port: 5000
+config_dir: /etc/infosystem
+web_dir: /var/www/infosystem
+venv_dir: /var/www/infosystem/venv
+apache2_dir: /etc/apache2
