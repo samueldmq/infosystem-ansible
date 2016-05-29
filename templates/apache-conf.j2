@@ -1,8 +1,8 @@
 <VirtualHost *:{{ app_port }}>
-    WSGIDaemonProcess {{ app_name  }} user=www-data group=www-data threads=5 python-home={{ venv_dir }}
-    WSGIScriptAlias / {{ web_dir }}/{{ app_name  }}.wsgi
+    WSGIDaemonProcess {{ app_name  }} user=www-data group=www-data threads=5 python-home={{ wsgi_dir }}/venv
+    WSGIScriptAlias / {{ wsgi_dir }}/{{ app_name  }}.wsgi
 
-    <Directory {{ web_dir }}>
+    <Directory {{ wsgi_dir }}>
         WSGIProcessGroup {{ app_name }}
         WSGIApplicationGroup %{GLOBAL}
         Order deny,allow

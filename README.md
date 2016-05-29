@@ -1,38 +1,88 @@
-Role Name
-=========
+# InfoSystem Ansible Role
 
-A brief description of the role goes here.
+Deploy flask systems based on
+[infosystem](https://github.com/samueldmq/infosystem).
 
-Requirements
-------------
+## Requirements
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+No specific pre-requisites other than having [Ansible](https://www.ansible.com)
+itself installed and configured.
 
-Role Variables
---------------
+### Ansible Server
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+You may install Ansible itself with:
 
-Dependencies
-------------
+    sudo apt-add-repository -y ppa:ansible/ansible
+    sudo apt-get update
+    sudo apt-get install -y ansible
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+Remember to configure the hosts Ansible is able to connect in
+`/etc/ansible/hosts` as:
 
-Example Playbook
-----------------
+    [servers]
+    127.0.0.1
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+It may be tested by running:
+
+    ansible servers -m ping -u {username}
+
+### Ansible Hosts
+
+Install ssh:
+
+    sudo apt-get install ssh
+
+Add the ssh public key from the user running the Ansible role in the remote
+server to `authorized_keys`:
+
+    ssh-copy-id {username}@{remote server}
+
+Define super user privilegies to the user running the Ansible role in the
+remote server by running `sudo visudo` and adding:
+
+    {username} ALL=(ALL) NOPASSWD:ALL
+
+## Role Variables
+
+The following variables are located in `vars/main.yml` and may be configured:
+
+    app_name: the application name, used to name files and processes for this
+              role. (defaults to "infosystem")
+    app_port: the port the application will be running on.
+              (defaults to "5000", the flask's default)
+    config_dir: the directory where the application specific configuration will
+                be stored. (defaults to "/etc/infosystem")
+    wsgi_dir: the directory where the WSGI script will be copied and the Python
+              virtual environment will be installed.
+              (defaults to "/var/www/infosystem")
+
+## Dependencies
+
+There is no dependency on other Ansible roles.
+
+## Example Playbook
+
+Create a `main.yml` file:
 
     - hosts: servers
+      sudo: yes
       roles:
-         - { role: username.rolename, x: 42 }
+         - infosystem-ansible
 
-License
--------
+And run it as super user with:
 
-BSD
+    ansible-playbook -s main.yml
 
-Author Information
-------------------
+Remember to tell Ansible where this role is located in your filesystem by
+editing `roles_path` entry in `/etc/ansible/ansible.cfg`.
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+## License
+
+Apache-2
+
+## Author Information
+
+Samuel de Medeiros Queiroz: [WebSite](http://www.samueldmq.com),
+[GitHub](https://github.com/samueldmq),
+[LinkedIn](https://br.linkedin.com/in/samueldmq),
+[Email](mailto:samueldmq@gmail.com)
