@@ -20,6 +20,9 @@
     {{ wsgi_dir }}/venv/bin/pip install {{ app_name }}
     creates={{ wsgi_dir }}/venv/lib/python*/site-packages/{{ app_name  }}
 
+- name: copy app config files
+  copy: src={{ wsgi_dir }}/venv{{ config_dir }}/ dest={{ config_dir }}
+
 - name: install apache2
   apt: name=apache2 state=present update_cache=yes
 
