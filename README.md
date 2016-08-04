@@ -1,4 +1,4 @@
-# InfoSystem Ansible Role
+# InfoSystem Ansible Role [![Build Status](https://travis-ci.org/samueldmq/infosystem-ansible.svg?branch=master)](https://travis-ci.org/samueldmq/infosystem-ansible)
 
 Deploy flask systems based on
 [infosystem](https://github.com/samueldmq/infosystem).
