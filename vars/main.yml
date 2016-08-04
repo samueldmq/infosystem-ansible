@@ -1,5 +1,7 @@
 ---
 app_name: infosystem
+app_git: https://{{ git_user }}:{{ git_passwd }}@github.com/samueldmq/infosystem
 app_port: 5000
 config_dir: /etc/infosystem
+force_update: true
 wsgi_dir: /var/www/infosystem

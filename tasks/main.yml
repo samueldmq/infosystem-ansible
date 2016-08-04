@@ -16,13 +16,27 @@
   notify:
     - delete venv source
 
+- name: delete git repo
+  file: path={{ wsgi_dir }}/{{ app_name  }}
+        state=absent
+  when: force_update
+
+- name: uninstall app from venv
+  command: >
+    {{ wsgi_dir }}/venv/bin/pip uninstall {{ app_name  }} -y
+    removes={{ wsgi_dir }}/venv/lib/python*/site-packages/{{ app_name  }}
+
+- name: clone git repo
+  git: repo={{ app_git }}
+       dest={{ wsgi_dir }}/{{ app_name  }}
+
 - name: install app within venv
   command: >
-    {{ wsgi_dir }}/venv/bin/pip install {{ app_name }}
+    {{ wsgi_dir }}/venv/bin/pip install {{ wsgi_dir }}/{{ app_name  }}/
     creates={{ wsgi_dir }}/venv/lib/python*/site-packages/{{ app_name  }}
 
-- name: copy app config
-  copy: src={{ wsgi_dir }}/venv{{ config_dir }}/ dest={{ config_dir }}
+- name: create app config dir
+  file: path={{ config_dir }} state=directory
 
 - name: copy wsgi config
   template: src=wsgi-conf.j2 dest={{ wsgi_dir }}/{{ app_name }}.wsgi owner=root group=root
@@ -35,11 +49,15 @@
 
 - name: install mod-wsgi-py3
   apt: name=libapache2-mod-wsgi-py3 state=present update_cache=yes
-  notify:
-    - enable apache mod-wsgi
+
+- name: enable apache mods
+  command: a2enmod wsgi headers rewrite
 
 - name: copy apache site config
   template: src=apache-conf.j2 dest=/etc/apache2/sites-available/{{ app_name }}.conf owner=root group=root
-  notify:
-    - enable apache site
-    - restart apache2
+
+- name: enable apache site
+  command: a2ensite {{ app_name }}
+
+- name: restart apache2
+  service: name=apache2 state=restarted

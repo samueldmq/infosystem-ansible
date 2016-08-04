@@ -1,12 +1,4 @@
 ---
 - name: delete venv source
   file: name={{ wsgi_dir }}/virtualenv-15.0.1 state=absent
-
-- name: enable apache site
-  command: a2ensite {{ app_name }}
-
-- name: enable apache mod-wsgi
-  command: a2enmod wsgi
-
-- name: restart apache2
-  service: name=apache2 state=restarted
+  
