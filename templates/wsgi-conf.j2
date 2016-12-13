@@ -1,3 +1,5 @@
-from {{ app_name }} import application
+from flask_cors import CORS
+import {{ app_name }}
 
-application = application.load_app()
+application = {{ app_name }}.System()
+CORS(application)
